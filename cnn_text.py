@@ -1,4 +1,4 @@
-from helper import *
+# from helper import *
 import numpy as np
 import tensorflow as tf
 
@@ -35,7 +35,7 @@ class CNN_Relation(object):
 	X_expanded = tf.expand_dims(X, -1) 				#shape (?, 21, 100, 1)
 
 	l2_loss = tf.constant(0.0)
-	
+
 	#CNN+Maxpooling Layer
 	pooled_outputs = []
 	for i, filter_size in enumerate(filter_sizes):
@@ -63,19 +63,19 @@ class CNN_Relation(object):
 
 		pooled_outputs.append(pooled)
 
-	print "pooled_outputs", len(pooled_outputs)
+	print ("pooled_outputs", len(pooled_outputs))
 
 	# Combine all the pooled features
 	num_filters_total = num_filters * len(filter_sizes)
 	h_pool = tf.concat(3, pooled_outputs)				#shape= (?, 1, 1, 210)
-	print "h_pool", h_pool.get_shape
+	print ("h_pool", h_pool.get_shape)
 	h_pool_flat = tf.reshape(h_pool, [-1, num_filters_total])	#shape =(?, 210)
-	print "h_pool_flate", h_pool_flat.get_shape
+	print ("h_pool_flat", h_pool_flat.get_shape)
 
 	#dropout layer	 
 	h_drop = tf.nn.dropout(h_pool_flat, self.dropout_keep_prob)
 
-	#Fully connetecte layer
+	#Fully connected layer
 	W = tf.Variable(tf.truncated_normal([num_filters_total, num_classes], stddev=0.1), name="W")
 	b = tf.Variable(tf.constant(0.1, shape=[num_classes]), name="b")
 	l2_loss += tf.nn.l2_loss(W)
@@ -85,11 +85,8 @@ class CNN_Relation(object):
 	#prediction and loss function
 	self.predictions = tf.argmax(scores, 1, name="predictions")
 	self.losses = tf.nn.softmax_cross_entropy_with_logits(scores, self.input_y)
-        self.loss = tf.reduce_mean(self.losses) + l2_reg_lambda * l2_loss
+	self.loss = tf.reduce_mean(self.losses) + l2_reg_lambda * l2_loss
 
-        # Accuracy
-        self.correct_predictions = tf.equal(self.predictions, tf.argmax(self.input_y, 1))
-        self.accuracy = tf.reduce_mean(tf.cast(self.correct_predictions, "float"), name="accuracy")
-
-
-
+    # Accuracy
+	self.correct_predictions = tf.equal(self.predictions, tf.argmax(self.input_y, 1))
+	self.accuracy = tf.reduce_mean(tf.cast(self.correct_predictions, "float"), name="accuracy")

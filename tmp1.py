@@ -66,8 +66,14 @@ print Y_train.shape
 
 """
 
-kf = KFold(len(W_train), n_folds=10)
+fp1 = open("f1_score_cnn.dat","w")
+fp2 = open("accuracy_cnn.dat","w")
 acc_list = []
+f1_list = []
+kf = KFold(len(W_train), n_folds=10)
+
+# writer = tf.train.SummaryWriter(logs_path, graph=tf.get_default_graph())
+
 for train, test in kf:
 	W_tr, W_te = W_train[train], W_train[test]
 	P_tr, P_te = P_train[train], P_train[test]
@@ -94,12 +100,19 @@ for train, test in kf:
 			type_dict_size)		#type vocab length	
 			
 
-	acc = train.cnnTrain(W_tr, W_te, P_tr, P_te, d1_tr, d1_te, d2_tr, d2_te, T_tr, T_te, Y_tr, Y_te)
+	acc,f1_score = train.cnnTrain(W_tr, W_te, P_tr, P_te, d1_tr, d1_te, d2_tr, d2_te, T_tr, T_te, Y_tr, Y_te)
 
-	print "Accuracy", acc
+	print ("Accuracy = %f"%acc)
+	print ("F1 score = %f"%f1_score)
 	acc_list.append(acc)
+	f1_list.append(f1_score)
+	fp1.write("%f\n"%f1_score)
+	fp2.write("%f\n"%acc)
 
-print "AVG", np.mean(acc_list)
+print "Average accuracy = ", np.mean(acc_list)
+print "Average F1 score = ", np.mean(f1_list)
+fp2.write("Average=%f"%np.mean(acc_list))
+fp1.write("Average=%f"%np.mean(f1_list))
 
 
 

@@ -40,7 +40,7 @@ class CNN_Train(object):
 		self.train_op = self.optimizer.apply_gradients(self.grads_and_vars, global_step=self.global_step)
 
 		self.sess.run(tf.initialize_all_variables())
-		self.fp = open("reslt",'w')
+		# self.fp = open("result.txt",'a')
 		
 	def train_step(self, W_batch, d1_batch, d2_batch, P_batch, T_batch, y_batch):
     		feed_dict = {
@@ -66,8 +66,8 @@ class CNN_Train(object):
 				self.cnn.input_y:y_batch,
 				self.cnn.dropout_keep_prob:1.0
 	    		}
-   		_, step, loss, accuracy, predictions = self.sess.run([self.global_step, self.cnn.loss, self.cnn.accuracy, self.cnn.predictions], feed_dict)
-    		print "Accuracy in test data", accuracy
+   		step, loss, accuracy, predictions = self.sess.run([self.global_step, self.cnn.loss, self.cnn.accuracy, self.cnn.predictions], feed_dict)
+    		print ("Accuracy in test data", accuracy)
 		return accuracy, predictions
 
 	def cnnTrain(self, W_tr, W_te, P_tr, P_te, d1_tr, d1_te, d2_tr, d2_te, T_tr, T_te, Y_tr, Y_te):		
@@ -76,6 +76,7 @@ class CNN_Train(object):
 		time = range(len(W_tr))
 		step = np.random.shuffle(time)
 		j = 0
+
 		for i in range(5000):
 			if(j >= len(W_tr)-batch_size):
 				j=0
@@ -88,19 +89,18 @@ class CNN_Train(object):
 		y_true = np.argmax(Y_te, 1)
 		y_pred = pred
 #		print "Precision", sk.metrics.precision_score(y_true, y_pred, average=None )
-#   		print "Recall", sk.metrics.recall_score(y_true, y_pred, average=None )
-    		print "f1_score", sk.metrics.f1_score(y_true, y_pred, average=None )
-#    		print "confusion_matrix"
-#   		print sk.metrics.confusion_matrix(y_true, y_pred)
-		self.fp.write(sk.metrics.f1_score(y_true, y_pred, average=None)
-		self.fp.write('\n')
-		
-		"""
+#   	print "Recall", sk.metrics.recall_score(y_true, y_pred, average=None )
+		f1_score = sk.metrics.f1_score(y_true, y_pred,pos_label=None, average='weighted')
+#    	print "confusion_matrix"
+#   	print sk.metrics.confusion_matrix(y_true, y_pred)
+		# self.fp.write("%s\n"%f1_score)
+
+		""" 
 		for t,p in zip(y_true, y_pred):
-			fp.write(str(t) +" "+str(p))
-			fp.write('\n')
-		fp.close()
+		fp.write(str(t) +" "+str(p))
+		fp.write('\n')
+		fp.close() 
 		"""
-		return acc
+		return acc,f1_score
 
 

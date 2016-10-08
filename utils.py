@@ -43,7 +43,7 @@ def readData(ftrain):
 			entity2_list.append([e1,e1_s,e1_e,e1_t])
 #		print e1,e2
 	else:
-		print "Error in readign", entities.strip()
+		print ("Error in reading", entities.strip())
 #		exit(0)
 	
 	ma = re.match(r"\[['\"](.*)['\"], '(.*)', ['\"](.*)['\"]\]", relation.strip())
@@ -52,7 +52,7 @@ def readData(ftrain):
 	elif relation == '[0]':
 		lable = 'other'
 	else:
-		print "Error in reading", relation
+		print ("Error in reading", relation)
 		exit(0)
 #	print lable
 	sent_lables.append(lable)
@@ -140,8 +140,8 @@ def makeWordList(sent_list):
 	i = 0
 	wl['unkown'] = 0	
 	for w,f in wf.iteritems():
-		i += 1
 		wl[w] = i
+		i += 1
 	return wl
 
 def makeRelList(rel_list):
